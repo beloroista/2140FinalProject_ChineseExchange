@@ -23,6 +23,12 @@
   	<description></description>
   	<servlet-class>final2140final.servlets.GetAnswer</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>GetTranslated</servlet-name>
+  	<display-name>GetTranslated</display-name>
+  	<description></description>
+  	<servlet-class>final2140final.servlets.GetTranslated</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>GetResults</servlet-name>
   	<url-pattern>/GetResults</url-pattern>
@@ -34,5 +40,9 @@
   <servlet-mapping>
   	<servlet-name>GetAnswer</servlet-name>
   	<url-pattern>/GetAnswer</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>GetTranslated</servlet-name>
+  	<url-pattern>/GetTranslated</url-pattern>
   </servlet-mapping>
 </web-app>

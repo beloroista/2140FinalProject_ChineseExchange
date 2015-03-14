@@ -18,9 +18,15 @@
 	<link rel="stylesheet" type="text/css" href="css/stackexchange.css">
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 	<link rel="shortcut icon" type="image/x-icon" href="http://www.shousibaocai.com/static/favicon.ico">
+	
+	<link href="http://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+	
 	<!-- script -->
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 </head>
 <body>
 	<nav class="navbar navbar-inverse" role="navigation">
@@ -81,7 +87,10 @@
 		</table>
 	</div>
 	
+	<!-- Jquery UI dialog(for translator) -->
+	<div id="TranslateDialog" title="Translate Helper"></div>
 <script>
+	//top search bar
 	$('.x-form').submit(function(event) {
 		event.preventDefault();
 		/* Act on the event */
@@ -98,8 +107,7 @@
 		}
 		return false;
 	});
-
-
+	
 
 	var site = "<%=inputSite%>";
 	var q = "<%=inputText%>";
@@ -140,35 +148,76 @@
 		// #btId: body
 		// #linkId: href="link"
 		// #showAnswerId  的questionId="question_id"  看答案
-		
-		for(var i=0; i< itemsArr.length; i++){
-			var itemContent = ' <tr> <td class="x-item"> <div class="row"> <div class="tag_line"> <div class="tags"> <b>Tags: </b> </div> <div class="score"> Score: <div id="scoreId"></div> ,&nbsp; <div class="answer_status"></div> ,&nbsp;<a href="" id="linkId">Link</a>,&nbsp;<a id="showAnswerId" questionId="">Show Answers</a></div> </div> </div> <div class="row"> <table class="inner_table"> <tbody> <tr> <th width="20%">Chinese Title</th> <th width="20%">English Title</th> <th width="60%">Content</th> </tr> <tr> <td width="20%" id="ctId"></td> <td width="20%" id="etId"></td> <td width="60%" id="btId"></td> </tr> <tr> <td></td> <td></td> <td id="actions">  </td> </tr> </tbody> </table> </div> </td> </tr>';
-			//add item frame
-			var tagsArr = itemsArr[i].tags;
-			$('.table>tbody').append(itemContent);
-			console.log(itemsArr[i].score);
-			$('.table>tbody>tr:eq('+i+') #scoreId').html(itemsArr[i].score);
-			$('.table>tbody>tr:eq('+i+') #ctId').html(itemsArr[i].chinesetitle);
-			$('.table>tbody>tr:eq('+i+') #etId').html(itemsArr[i].title);
-			$('.table>tbody>tr:eq('+i+') #btId').html(itemsArr[i].body); 
-			$('.table>tbody>tr:eq('+i+') #linkId').attr('href',itemsArr[i].link);
-			$('.table>tbody>tr:eq('+i+') #showAnswerId').attr('questionId',itemsArr[i].question_id);
-			if(itemsArr[i].is_answered==true){
-				$('.table>tbody>tr:eq('+i+') .answer_status').html('Is Answered <span class="glyphicon glyphicon-ok"></span>').css('background-color', 'rgb(9, 211, 9)');
+		if(itemsArr.length!=0){
+			for(var i=0; i< itemsArr.length; i++){
+				var itemContent = ' <tr> <td class="x-item"> <div class="row"> <div class="tag_line"> <div class="tags"> <b>Tags: </b> </div> <div class="score"> Score: <div id="scoreId"></div> ,&nbsp; <div class="answer_status"></div> ,&nbsp;<a href="" id="linkId">Link</a>,&nbsp;<a id="showAnswerId" questionId="">Show Answers</a></div> </div> </div> <div class="row"> <table class="inner_table"> <tbody> <tr> <th width="20%">Chinese Title</th> <th width="20%">English Title</th> <th width="60%">Content(<a class="bodytrans">translate</a>)</th> </tr> <tr> <td width="20%" class="ctId"></td> <td width="20%" class="etId"></td> <td width="60%" class="btId"></td> </tr> <tr> <td></td> <td></td> <td id="actions">  </td> </tr> </tbody> </table> </div> </td> </tr>';
+				//add item frame
+				var tagsArr = itemsArr[i].tags;
+				$('.table>tbody').append(itemContent);
+				console.log(itemsArr[i].score);
+				$('.table>tbody>tr:eq('+i+') #scoreId').html(itemsArr[i].score);
+				$('.table>tbody>tr:eq('+i+') .ctId').html(itemsArr[i].chinesetitle);
+				$('.table>tbody>tr:eq('+i+') .etId').html(itemsArr[i].title);
+				$('.table>tbody>tr:eq('+i+') .btId').html(itemsArr[i].body); 
+				$('.table>tbody>tr:eq('+i+') #linkId').attr('href',itemsArr[i].link);
+				$('.table>tbody>tr:eq('+i+') #showAnswerId').attr('questionId',itemsArr[i].question_id);
+				if(itemsArr[i].is_answered==true){
+					$('.table>tbody>tr:eq('+i+') .answer_status').html('Is Answered <span class="glyphicon glyphicon-ok"></span>').css('background-color', 'rgb(9, 211, 9)');
+					
+				}else{
+					$('.table>tbody>tr:eq('+i+') .answer_status').html('Not Answered <span class="glyphicon glyphicon-remove"></span>').css('background-color', 'red');
+				}
 				
-			}else{
-				$('.table>tbody>tr:eq('+i+') .answer_status').html('Not Answered <span class="glyphicon glyphicon-remove"></span>').css('background-color', 'red');
+				for(var j=0;j<tagsArr.length;j++){	
+					$('.table>tbody>tr:eq('+i+') .tags').append('<span class="badge">'+tagsArr[j]+'</span>');
+				}
+				
 			}
-			
-			for(var j=0;j<tagsArr.length;j++){	
-				$('.table>tbody>tr:eq('+i+') .tags').append('<span class="badge">'+tagsArr[j]+'</span>');
-			}
-			
+		}else{
+			//find nothing
+			$('.table>tbody').append('<tr><td><img src="images/not_found.jpeg"><td></tr>');
 		}
-	})
+		
+		//open translate Helper
+		$("#TranslateDialog").dialog({
+	        autoOpen: false, 
+	        hide: "slide",
+	        show : "slide",
+	        height: 400,
+	        width: 400,
+	        draggable: true,
+	        position: {
+	            my: "left center",
+	            at: "left center"
+	         }
+	     });
+	     $('.bodytrans').click(function() {
+	    	 //when user click translate button besides "Content"
+	    	($("#TranslateDialog").dialog("isOpen") == false) ? $("#TranslateDialog").dialog("open") : $("#TranslateDialog").dialog("close");
+	    	$('#TranslateDialog').html('<h3><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>Translating...</h3>');
+	    	var contentText = $(this).parent().parent().parent().find('.btId').html();
+         	//$('#TranslateDialog').html(contentText);
+         	$.ajax({
+               	url: 'GetTranslated',
+               	type: 'GET',
+               	dataType: 'json',
+               	data: {englishText: contentText},
+               })
+               .done(function(data) {
+               		console.log("translate success");
+               		$('#TranslateDialog').html(data.translatedText);        
+               })
+               .fail(function() {
+            		alert("error in translating context");
+               		console.log("error");
+               });
+	     });
+	})//end of .done
 	.fail(function() {
 		console.log("error");
 	});
+	
+	
 
 </script>
 </body>
